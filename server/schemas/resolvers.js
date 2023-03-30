@@ -9,7 +9,7 @@ const resolvers = {
     // retrieve data from database
     Query: {
         // find all users
-        user: async () => {
+        users: async () => {
             return User.find();
         },
         // find one user by _id
@@ -19,7 +19,7 @@ const resolvers = {
         // find logged in user by _id
         me: async (parent, args, context) => {
             if (context.user) {
-                return User.findOne({ _id: context.user._id})
+                return User.findOne({ _id: context.user._id}).populate('savedBooks')
             }
             // no context.user, throw error
             throw new AuthenticationError('Please log in!')
@@ -30,19 +30,37 @@ const resolvers = {
     Mutation: {
         addUser: async (parent, { username, email, password }) => {
             const user = await User.create({ username, email, password });
+            const token = signToken(user);
+            
             return { token, user };
         },
         login: async (parent, { email, password }) => {
-            const user = User.findOne({ email });
+            const user = await User.findOne({ email });
             if (!user) {
                 throw new AuthenticationError('Invalid login credentials. Please try again');
             }
-            const correctPassword = await profile.isCorrectPassword(password);
+            const correctPassword = await user.isCorrectPassword(password);
             if (!correctPassword) {
-                throw new AuthenticationError('Invalid login credentials. Please try again')
+                throw new AuthenticationError('Invalid login credentials. Please try again');
             }
-            const token = signToken(profile);
-            return { token, user }
+            const token = signToken(user);
+            return { token, user };
+        },
+        
+        addBook: async (parent, args, context) => {
+            if (context.user) {
+                const updatedBookList = await User.findOneAndUpdate(
+                    {_id: context.user._id},
+                    {$addToSet: {savedBooks: args}},
+                    {
+                        new: true,
+                        runValidators: true,
+                    }
+                );
+                return updatedBookList;
+            }
+            throw new AuthenticationError('You need to be logged in!');
+
         }
     }
 }
