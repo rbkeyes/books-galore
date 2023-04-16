@@ -8,14 +8,6 @@ const { signToken } = require('../utils/auth')
 const resolvers = {
     // retrieve data from database
     Query: {
-        // find all users
-        users: async () => {
-            return User.find();
-        },
-        // find one user by _id
-        user: async (parent, { userId }) => {
-            return User.findOne({ _id: userId });
-        },
         // find logged in user by _id
         me: async (parent, args, context) => {
             if (context.user) {
