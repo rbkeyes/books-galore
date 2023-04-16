@@ -2,6 +2,9 @@
   "name": "books-galore",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "16.19.0"
+  },
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
