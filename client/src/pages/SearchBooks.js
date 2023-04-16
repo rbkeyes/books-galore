@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import useMutation and SAVE_BOOK 
 import { useMutation } from '@apollo/client';
-import { SAVE_BOOK } from '../utils/mutations'
+import {SAVE_BOOK} from '../utils/mutations'
 
 import {
   Container,
@@ -14,17 +14,17 @@ import {
 
 import Auth from '../utils/auth';
 
-const SearchBooks = () => {
+export default function SearchBooks() {
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
   // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+  const [savedBookIds, setSavedBookIds] = useState();
 
-    // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
+  // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   useEffect(() => {
-    return () => saveBookIds(savedBookIds);
+    return () => savedBookIds(savedBookIds);
   });
 
 
@@ -163,4 +163,3 @@ const SearchBooks = () => {
   );
 };
 
-export default SearchBooks;
