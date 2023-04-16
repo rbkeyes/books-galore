@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   ApolloClient,
-  InMemoryCache,
   ApolloProvider,
   createHttpLink,
 } from '@apollo/client';
+import { InMemoryLRUCache } from '@apollo/utils.keyvaluecache';
 import { setContext } from '@apollo/client/link/context';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ import Navbar from './components/Navbar';
 // Construct our main GraphQL API endpoint
 const httpLink = createHttpLink({
   // uri: '/graphql',
-  uri: process.env.MONGODB_URI || 'https://books-galore.herokuapp.com/graphql'
+  uri: 'https://books-galore.herokuapp.com/graphql'
 });
 
 // Construct request middleware that will attach the JWT token to every request as an `authorization` header
@@ -34,7 +34,7 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
   // Set up our client to execute the `authLink` middleware prior to making the request to our GraphQL API
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryLRUCache(),
 });
 
 function App() {
