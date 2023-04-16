@@ -2,7 +2,7 @@ import React from 'react';
 import {
   ApolloClient,
   ApolloProvider,
-  InMemoryLRUCache,
+  InMemoryCache,
   createHttpLink,
 } from '@apollo/client';
 // import {  } from '@apollo/utils.keyvaluecache';
@@ -35,7 +35,7 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
   // Set up our client to execute the `authLink` middleware prior to making the request to our GraphQL API
   link: authLink.concat(httpLink),
-  cache: new InMemoryLRUCache(),
+  cache: new InMemoryCache(),
 });
 
 function App() {
