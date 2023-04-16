@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import useMutation and SAVE_BOOK 
 import { useMutation } from '@apollo/client';
-import {SAVE_BOOK} from '../utils/mutations'
+import { SAVE_BOOK} from '../utils/mutations'
 
 import {
   Container,
@@ -24,9 +24,8 @@ export default function SearchBooks() {
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   useEffect(() => {
-    return () => savedBookIds(savedBookIds);
+    return () => savedBookIds();
   });
-
 
   // fetch searched book from api
   const searchGoogleBooks = async (query) => {
@@ -34,6 +33,7 @@ export default function SearchBooks() {
     const response = await fetch(bookSearchURL);
     const data = await response.json();
     setSearchedBooks(data);
+    console.log(data);
   };
 
   // useMutation to save book data to db
@@ -102,7 +102,9 @@ export default function SearchBooks() {
       <div fluid className='text-light bg-dark pt-5'>
         <Container>
           <h1>Search for Books!</h1>
-          <Form onSubmit={handleFormSubmit}>
+          </Container>
+          </div>
+          {/* <Form onSubmit={handleFormSubmit}>
             <Form.Row>
               <Col xs={12} md={8}>
                 <Form.Control
@@ -157,8 +159,8 @@ export default function SearchBooks() {
               </Col>
             );
           })}
-        </Row>
-      </Container>
+        </Row> */}
+      {/* </Container> */}
     </>
   );
 };
