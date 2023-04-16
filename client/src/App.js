@@ -2,9 +2,10 @@ import React from 'react';
 import {
   ApolloClient,
   ApolloProvider,
+  InMemoryLRUCache,
   createHttpLink,
 } from '@apollo/client';
-import { InMemoryLRUCache } from '@apollo/utils.keyvaluecache';
+// import {  } from '@apollo/utils.keyvaluecache';
 import { setContext } from '@apollo/client/link/context';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
