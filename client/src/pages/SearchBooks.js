@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import useMutation and SAVE_BOOK 
-import { useMutation } from '@apollo/client';
-import { SAVE_BOOK} from '../utils/mutations'
-
 import {
   Container,
   Col,
@@ -13,31 +9,33 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
+import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
-export default function SearchBooks() {
+// 🦄 import useMutation, SAVE_BOOK mutation go use in place of saveBook() from API
+import { useMutation } from '@apollo/client';
+import { SAVE_BOOK } from '../utils/mutations';
+
+const SearchBooks = () => {
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
+
   // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState();
+  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
-  // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
-  useEffect(() => {
-    return () => savedBookIds();
-  });
+  const [saveBook, {error}] = useMutation(SAVE_BOOK);
 
-  // fetch searched book from api
-  const searchGoogleBooks = async (query) => {
-    let bookSearchURL = (`https://www.googleapis.com/books/v1/volumes?q=${query}`);
-    const response = await fetch(bookSearchURL);
-    const data = await response.json();
-    setSearchedBooks(data);
-    console.log(data);
+  // 🦄 function to fetch data from googleBooks api (copied from utils.API)
+  const searchGoogleBooks = (query) => {
+    return fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
   };
 
-  // useMutation to save book data to db
-  const [saveBook, { error }] = useMutation(SAVE_BOOK);
+  // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
+  // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
+  useEffect(() => {
+    return () => saveBookIds(savedBookIds);
+  });
 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
@@ -84,9 +82,11 @@ export default function SearchBooks() {
     }
 
     try {
-      const response = await saveBook(bookToSave, token);
+      const {data} = await saveBook({
+        variables: {...bookToSave}
+      })
 
-      if (!response.ok) {
+      if (!data) {
         throw new Error('something went wrong!');
       }
 
@@ -99,13 +99,11 @@ export default function SearchBooks() {
 
   return (
     <>
-      <div fluid className='text-light bg-dark pt-5'>
+      <div className='text-light bg-dark pt-5'>
         <Container>
           <h1>Search for Books!</h1>
-          </Container>
-          </div>
-          {/* <Form onSubmit={handleFormSubmit}>
-            <Form.Row>
+          <Form onSubmit={handleFormSubmit}>
+            <Row>
               <Col xs={12} md={8}>
                 <Form.Control
                   name='searchInput'
@@ -121,13 +119,13 @@ export default function SearchBooks() {
                   Submit Search
                 </Button>
               </Col>
-            </Form.Row>
+            </Row>
           </Form>
         </Container>
       </div>
 
       <Container>
-        <h2>
+        <h2 className='pt-5'>
           {searchedBooks.length
             ? `Viewing ${searchedBooks.length} results:`
             : 'Search for a book to begin'}
@@ -159,9 +157,10 @@ export default function SearchBooks() {
               </Col>
             );
           })}
-        </Row> */}
-      {/* </Container> */}
+        </Row>
+      </Container>
     </>
   );
 };
 
+export default SearchBooks;
