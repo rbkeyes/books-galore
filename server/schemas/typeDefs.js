@@ -7,7 +7,6 @@ const typeDefs = gql`
     email: String
     bookCount: Int
     savedBooks: [Book]
-    token: ID
   }
 
   type Book {
@@ -51,7 +50,6 @@ const typeDefs = gql`
       savedBooks: [BookData!]
       ): User
     removeBook(
-      userId: ID!,
       bookId: String!
       ): User
   }
